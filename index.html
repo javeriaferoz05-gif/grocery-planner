@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Grocery Planner</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c1552c">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Grocery Planner">
+
+<style>
+  :root{
+    --ink:#2b2320;
+    --paper:#faf3e8;
+    --card:#fffaf2;
+    --spice:#c1552c;
+    --spice-deep:#9c3f1f;
+    --leaf:#5c7a52;
+    --leaf-deep:#3f5838;
+    --line:#e3d5bd;
+    --muted:#8a7a68;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;
+    background:var(--paper);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--ink);
+    padding-bottom:100px;
+  }
+  header{
+    background:linear-gradient(135deg,var(--spice) 0%,var(--spice-deep) 100%);
+    color:#fff7ec;
+    padding:22px 20px 26px;
+    padding-top:calc(22px + env(safe-area-inset-top));
+    position:sticky;
+    top:0;
+    z-index:10;
+    border-bottom-left-radius:22px;
+    border-bottom-right-radius:22px;
+    box-shadow:0 6px 14px rgba(0,0,0,0.15);
+  }
+  header h1{
+    margin:0 0 2px;
+    font-size:1.5rem;
+    letter-spacing:0.3px;
+  }
+  header p{
+    margin:0;
+    font-size:0.82rem;
+    opacity:0.85;
+  }
+  .progress-wrap{
+    margin-top:14px;
+    background:rgba(255,255,255,0.25);
+    height:8px;
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .progress-bar{
+    height:100%;
+    background:#ffe3b3;
+    width:0%;
+    transition:width 0.3s ease;
+  }
+  .progress-label{
+    font-size:0.72rem;
+    margin-top:6px;
+    opacity:0.9;
+  }
+  .total-label{
+    font-size:0.95rem;
+    margin-top:8px;
+    font-weight:700;
+    background:rgba(255,255,255,0.18);
+    display:inline-block;
+    padding:5px 12px;
+    border-radius:10px;
+  }
+  .price-input{
+    width:58px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    border-radius:8px;
+    padding:5px 6px;
+    font-size:0.8rem;
+    color:var(--ink);
+    text-align:right;
+    flex-shrink:0;
+  }
+  .currency{
+    font-size:0.8rem;
+    color:var(--muted);
+    flex-shrink:0;
+  }
+  .cat-subtotal{
+    font-size:0.7rem;
+    color:var(--muted);
+    padding:0 14px 10px;
+    text-align:right;
+  }
+  main{
+    padding:16px 14px 0;
+  }
+  .toolbar{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .toolbar button{
+    flex:1;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--ink);
+    padding:9px 6px;
+    border-radius:12px;
+    font-size:0.78rem;
+    font-weight:600;
+  }
+  .toolbar button:active{ transform:scale(0.97); }
+  .category{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .category-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 14px;
+    cursor:pointer;
+  }
+  .category-head .name{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size:0.95rem;
+  }
+  .swatch{
+    width:10px;height:10px;border-radius:50%;
+  }
+  .count-pill{
+    font-size:0.7rem;
+    color:var(--muted);
+    background:var(--paper);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .chev{
+    font-size:0.7rem;
+    color:var(--muted);
+    transition:transform 0.2s;
+  }
+  .category.collapsed .chev{ transform:rotate(-90deg); }
+  .category.collapsed .items, .category.collapsed .add-row{ display:none; }
+  .items{
+    padding:0 14px 4px;
+  }
+  .item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:9px 2px;
+    border-top:1px solid var(--line);
+  }
+  .item:first-child{ border-top:none; }
+  .check{
+    width:22px;height:22px;
+    border-radius:7px;
+    border:2px solid var(--muted);
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.85rem;
+    color:transparent;
+  }
+  .item.bought .check{
+    background:var(--leaf);
+    border-color:var(--leaf-deep);
+    color:#fff;
+  }
+  .item-name{
+    flex:1;
+    font-size:0.9rem;
+  }
+  .item.bought .item-name{
+    text-decoration:line-through;
+    color:var(--muted);
+  }
+  .del{
+    color:var(--muted);
+    font-size:1rem;
+    padding:2px 6px;
+  }
+  .add-row{
+    display:flex;
+    gap:8px;
+    padding:10px 14px 14px;
+  }
+  .add-row input{
+    flex:1;
+    border:1px solid var(--line);
+    background:var(--paper);
+    border-radius:10px;
+    padding:8px 10px;
+    font-size:0.85rem;
+    color:var(--ink);
+  }
+  .add-row button{
+    background:var(--leaf);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:8px 14px;
+    font-size:0.85rem;
+    font-weight:600;
+  }
+  .add-cat{
+    display:flex;
+    gap:8px;
+    margin:6px 0 20px;
+  }
+  .add-cat input{
+    flex:1;
+    border:1px solid var(--line);
+    background:var(--card);
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:0.85rem;
+  }
+  .add-cat button{
+    background:var(--spice);
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    padding:10px 16px;
+    font-weight:700;
+    font-size:0.85rem;
+  }
+  .footnote{
+    text-align:center;
+    color:var(--muted);
+    font-size:0.72rem;
+    padding:6px 20px 24px;
+  }
+  .save-banner{
+    display:none;
+    position:fixed;
+    bottom:14px;
+    left:14px;
+    right:14px;
+    background:#7a2b1f;
+    color:#fff3ea;
+    padding:10px 14px;
+    border-radius:12px;
+    font-size:0.8rem;
+    text-align:center;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+    z-index:20;
+  }
+  .save-banner.show{ display:block; }
+  .empty{
+    color:var(--muted);
+    font-size:0.8rem;
+    padding:8px 2px 12px;
+  }
+  .install-banner{
+    display:none;
+    position:fixed;
+    bottom:14px;
+    left:14px;
+    right:14px;
+    background:var(--leaf);
+    color:#fff;
+    padding:12px 14px;
+    border-radius:14px;
+    font-size:0.82rem;
+    text-align:center;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+    z-index:20;
+  }
+  .install-banner.show{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .install-banner button{
+    background:#fff;
+    color:var(--leaf-deep);
+    border:none;
+    border-radius:10px;
+    padding:8px 12px;
+    font-weight:700;
+    font-size:0.8rem;
+    flex-shrink:0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧺 Grocery Planner</h1>
+  <p id="dateLabel">Your list</p>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="progress-label" id="progressLabel">0 of 0 bought</div>
+  <div class="total-label" id="totalLabel">£0.00 spent so far</div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <button id="clearBought">Clear bought</button>
+    <button id="uncheckAll">Uncheck all</button>
+    <button id="resetAll">Reset list</button>
+  </div>
+  <div class="toolbar">
+    <button id="copyBackup">📋 Copy my list (backup)</button>
+  </div>
+
+  <div id="categories"></div>
+
+  <div class="add-cat">
+    <input id="newCatInput" placeholder="Add a new category (e.g. Spices)" />
+    <button id="addCatBtn">Add</button>
+  </div>
+
+  <div class="footnote">Saved locally on this device — works fully offline.</div>
+</main>
+
+<div class="save-banner" id="saveBanner"></div>
+<div class="install-banner" id="installBanner">
+  <span>Install this as an app on your home screen</span>
+  <button id="installBtn">Install</button>
+</div>
+
+<script>
+const DEFAULT_DATA = [
+  { name:"Produce", color:"#5c7a52", items:["Onions","Garlic","Tomatoes","Coriander","Green chillies","Ginger","Potatoes"], bought:{}, prices:{} },
+  { name:"Fruit", color:"#c1552c", items:["Bananas","Lemons","Apples"], bought:{}, prices:{} },
+  { name:"Meat & Fish", color:"#a6402a", items:["Chicken","Fish"], bought:{}, prices:{} },
+  { name:"Dairy", color:"#c98a3e", items:["Milk","Yogurt","Cheese","Butter"], bought:{}, prices:{} },
+  { name:"Condiments & Spices", color:"#8a6b3f", items:["Salt","Cumin","Red chilli powder","Garam masala","Cooking oil"], bought:{}, prices:{} },
+  { name:"Grains & Bakery", color:"#b08d57", items:["Rice","Bread","Flour"], bought:{}, prices:{} },
+  { name:"Beverages", color:"#4d7c8a", items:["Tea","Water"], bought:{}, prices:{} },
+  { name:"Household", color:"#6b6b6b", items:["Dish soap","Bin bags"], bought:{}, prices:{} }
+];
+
+let data = null;
+const STORAGE_KEY = "grocery-planner:list";
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      data = JSON.parse(raw);
+    } else {
+      data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+      save();
+    }
+  }catch(e){
+    console.error("load failed", e);
+    data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+  render();
+}
+
+function showBanner(text){
+  const b = document.getElementById("saveBanner");
+  b.textContent = text;
+  b.classList.add("show");
+  setTimeout(()=> b.classList.remove("show"), 5000);
+}
+
+function save(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }catch(e){
+    console.error("save failed", e);
+    showBanner("Couldn't save — your device storage may be full.");
+  }
+}
+
+function render(){
+  const wrap = document.getElementById("categories");
+  wrap.innerHTML = "";
+  let total=0, done=0, grandTotal=0;
+
+  data.forEach((cat, ci)=>{
+    if(!cat.prices) cat.prices = {};
+    total += cat.items.length;
+    done += cat.items.filter(it=>cat.bought[it]).length;
+
+    let catSubtotal = 0;
+    cat.items.forEach(it=>{
+      if(cat.bought[it] && cat.prices[it]){
+        catSubtotal += parseFloat(cat.prices[it]) || 0;
+      }
+    });
+    grandTotal += catSubtotal;
+
+    const catEl = document.createElement("div");
+    catEl.className = "category" + (cat.collapsed ? " collapsed" : "");
+
+    const boughtCount = cat.items.filter(it=>cat.bought[it]).length;
+
+    catEl.innerHTML = `
+      <div class="category-head" data-ci="${ci}">
+        <div class="name"><span class="swatch" style="background:${cat.color}"></span>${cat.name}</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="count-pill">${boughtCount}/${cat.items.length}</span>
+          <span class="chev">▾</span>
+        </div>
+      </div>
+      <div class="items">
+        ${cat.items.length === 0 ? '<div class="empty">No items yet — add one below.</div>' : ''}
+        ${cat.items.map((it,ii)=>`
+          <div class="item ${cat.bought[it] ? 'bought':''}" data-ci="${ci}" data-ii="${ii}">
+            <div class="check" data-action="toggle">${cat.bought[it] ? '✓':''}</div>
+            <div class="item-name">${escapeHtml(it)}</div>
+            <span class="currency">£</span>
+            <input type="number" inputmode="decimal" step="0.01" min="0" class="price-input" data-action="price" data-ci="${ci}" data-ii="${ii}" placeholder="0.00" value="${cat.prices[it] ?? ''}" />
+            <div class="del" data-action="del">✕</div>
+          </div>
+        `).join("")}
+      </div>
+      ${catSubtotal > 0 ? `<div class="cat-subtotal">Subtotal: £${catSubtotal.toFixed(2)}</div>` : ''}
+      <div class="add-row">
+        <input type="text" placeholder="Add item..." data-ci="${ci}" class="new-item-input" />
+        <button data-ci="${ci}" class="add-item-btn">Add</button>
+      </div>
+    `;
+    wrap.appendChild(catEl);
+  });
+
+  document.getElementById("progressBar").style.width = total ? (done/total*100)+"%" : "0%";
+  document.getElementById("progressLabel").textContent = `${done} of ${total} bought`;
+  document.getElementById("totalLabel").textContent = `£${grandTotal.toFixed(2)} spent so far`;
+
+  wrap.querySelectorAll(".category-head").forEach(h=>{
+    h.addEventListener("click", ()=>{
+      const ci = h.dataset.ci;
+      data[ci].collapsed = !data[ci].collapsed;
+      render(); save();
+    });
+  });
+  wrap.querySelectorAll(".item").forEach(row=>{
+    row.querySelector('[data-action="toggle"]').addEventListener("click",(e)=>{
+      e.stopPropagation();
+      const ci=row.dataset.ci, ii=row.dataset.ii;
+      const name = data[ci].items[ii];
+      data[ci].bought[name] = !data[ci].bought[name];
+      render(); save();
+    });
+    row.querySelector('[data-action="del"]').addEventListener("click",(e)=>{
+      e.stopPropagation();
+      const ci=row.dataset.ci, ii=row.dataset.ii;
+      const name = data[ci].items[ii];
+      data[ci].items.splice(ii,1);
+      delete data[ci].bought[name];
+      delete data[ci].prices[name];
+      render(); save();
+    });
+    const priceInput = row.querySelector('[data-action="price"]');
+    priceInput.addEventListener("click", e=> e.stopPropagation());
+    priceInput.addEventListener("change", (e)=>{
+      const ci=row.dataset.ci, ii=row.dataset.ii;
+      const name = data[ci].items[ii];
+      const val = e.target.value;
+      if(val === ""){ delete data[ci].prices[name]; }
+      else { data[ci].prices[name] = parseFloat(val) || 0; }
+      render(); save();
+    });
+  });
+  wrap.querySelectorAll(".add-item-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const ci = btn.dataset.ci;
+      const input = wrap.querySelector(`.new-item-input[data-ci="${ci}"]`);
+      const val = input.value.trim();
+      if(val){
+        data[ci].items.push(val);
+        input.value="";
+        render(); save();
+      }
+    });
+  });
+  wrap.querySelectorAll(".new-item-input").forEach(input=>{
+    input.addEventListener("keydown",(e)=>{
+      if(e.key==="Enter"){
+        e.preventDefault();
+        wrap.querySelector(`.add-item-btn[data-ci="${input.dataset.ci}"]`).click();
+      }
+    });
+  });
+}
+
+function escapeHtml(str){
+  const d = document.createElement("div");
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+document.getElementById("addCatBtn").addEventListener("click", ()=>{
+  const input = document.getElementById("newCatInput");
+  const val = input.value.trim();
+  if(val){
+    data.push({name:val, color:"#7a6a55", items:[], bought:{}, prices:{}});
+    input.value="";
+    render(); save();
+  }
+});
+document.getElementById("newCatInput").addEventListener("keydown",(e)=>{
+  if(e.key==="Enter"){ e.preventDefault(); document.getElementById("addCatBtn").click(); }
+});
+
+document.getElementById("clearBought").addEventListener("click", ()=>{
+  data.forEach(cat=>{
+    cat.items.forEach(it=>{
+      if(cat.bought[it]) delete cat.prices[it];
+    });
+    cat.items = cat.items.filter(it=>!cat.bought[it]);
+    cat.bought = {};
+  });
+  render(); save();
+});
+document.getElementById("uncheckAll").addEventListener("click", ()=>{
+  data.forEach(cat=>{ cat.bought = {}; });
+  render(); save();
+});
+document.getElementById("resetAll").addEventListener("click", ()=>{
+  if(confirm("Reset the whole list back to the starting template? This can't be undone.")){
+    data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    render(); save();
+  }
+});
+
+document.getElementById("copyBackup").addEventListener("click", async ()=>{
+  const lines = [];
+  data.forEach(cat=>{
+    if(cat.items.length === 0) return;
+    lines.push(`${cat.name}:`);
+    cat.items.forEach(it=>{
+      const mark = cat.bought[it] ? "[x]" : "[ ]";
+      const price = cat.prices && cat.prices[it] ? ` - £${parseFloat(cat.prices[it]).toFixed(2)}` : "";
+      lines.push(`  ${mark} ${it}${price}`);
+    });
+  });
+  const text = lines.join("\n");
+  try{
+    await navigator.clipboard.writeText(text);
+    showBanner("List copied — paste it anywhere to keep a backup.");
+  }catch(e){
+    showBanner("Couldn't copy automatically — select the text manually instead.");
+    console.error("clipboard failed", e);
+  }
+});
+
+const dateLabel = document.getElementById("dateLabel");
+dateLabel.textContent = new Date().toLocaleDateString(undefined, {weekday:'long', month:'long', day:'numeric'});
+
+load();
+
+// ---- PWA install + service worker ----
+let deferredInstallPrompt = null;
+const installBanner = document.getElementById("installBanner");
+const installBtn = document.getElementById("installBtn");
+
+window.addEventListener("beforeinstallprompt", (e)=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  installBanner.classList.add("show");
+});
+
+installBtn.addEventListener("click", async ()=>{
+  installBanner.classList.remove("show");
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+  }
+});
+
+window.addEventListener("appinstalled", ()=>{
+  installBanner.classList.remove("show");
+});
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("service-worker.js").catch(e=>{
+      console.error("Service worker registration failed", e);
+    });
+  });
+}
+</script>
+</body>
+</html>
