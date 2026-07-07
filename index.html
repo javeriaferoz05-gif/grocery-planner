@@ -6,23 +6,34 @@
 <title>Grocery Planner</title>
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#c1552c">
+<meta name="theme-color" content="#161109">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Grocery Planner">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+
 <style>
   :root{
-    --ink:#2b2320;
-    --paper:#faf3e8;
-    --card:#fffaf2;
-    --spice:#c1552c;
-    --spice-deep:#9c3f1f;
-    --leaf:#5c7a52;
-    --leaf-deep:#3f5838;
-    --line:#e3d5bd;
-    --muted:#8a7a68;
+    --ink:#f0e7d6;
+    --paper:#161109;
+    --card:#221a12;
+    --card2:#2a2116;
+    --spice:#7a2e3a;
+    --spice-deep:#5a212a;
+    --spice-bright:#d1838a;
+    --gold:#c6a15b;
+    --gold-deep:#a3823f;
+    --gold-bright:#e4c17e;
+    --leaf:#3a6350;
+    --leaf-deep:#274538;
+    --teal:#2b4a5e;
+    --teal-deep:#1d3441;
+    --line:rgba(198,161,91,0.22);
+    --muted:#a6987e;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   body{
@@ -30,66 +41,129 @@
     background:var(--paper);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     color:var(--ink);
-    padding-bottom:100px;
+    padding-bottom:110px;
+  }
+  .display{
+    font-family:"Fraunces",Georgia,serif;
+  }
+  .mono{
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-variant-numeric:tabular-nums;
   }
   header{
-    background:linear-gradient(135deg,var(--spice) 0%,var(--spice-deep) 100%);
-    color:#fff7ec;
-    padding:22px 20px 26px;
-    padding-top:calc(22px + env(safe-area-inset-top));
+    background:linear-gradient(160deg,#241a13 0%,#181209 100%);
+    color:var(--ink);
+    padding:26px 20px 28px;
+    padding-top:calc(26px + env(safe-area-inset-top));
     position:sticky;
     top:0;
     z-index:10;
-    border-bottom-left-radius:22px;
-    border-bottom-right-radius:22px;
-    box-shadow:0 6px 14px rgba(0,0,0,0.15);
+    border-bottom:1px solid var(--line);
+    box-shadow:0 8px 20px rgba(0,0,0,0.35);
   }
   header h1{
-    margin:0 0 2px;
-    font-size:1.5rem;
+    margin:0 0 4px;
+    font-size:1.55rem;
+    font-weight:600;
     letter-spacing:0.3px;
+    color:var(--gold-bright);
   }
   header p{
-    margin:0;
-    font-size:0.82rem;
-    opacity:0.85;
+    margin:0 0 14px;
+    font-size:0.76rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    opacity:0.6;
+    padding-bottom:14px;
+    border-bottom:1px dashed var(--line);
   }
   .progress-wrap{
-    margin-top:14px;
-    background:rgba(255,255,255,0.25);
-    height:8px;
+    margin-top:16px;
+    background:rgba(198,161,91,0.14);
+    height:5px;
     border-radius:6px;
     overflow:hidden;
   }
   .progress-bar{
     height:100%;
-    background:#ffe3b3;
+    background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));
     width:0%;
     transition:width 0.3s ease;
   }
   .progress-label{
     font-size:0.72rem;
-    margin-top:6px;
-    opacity:0.9;
+    margin-top:8px;
+    opacity:0.7;
+    letter-spacing:0.03em;
   }
   .total-label{
     font-size:0.95rem;
-    margin-top:8px;
-    font-weight:700;
-    background:rgba(255,255,255,0.18);
+    margin-top:10px;
+    font-weight:600;
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    color:var(--gold-bright);
+    background:rgba(198,161,91,0.1);
+    border:1px solid var(--line);
     display:inline-block;
-    padding:5px 12px;
-    border-radius:10px;
+    padding:6px 14px;
+    border-radius:999px;
+    letter-spacing:0.02em;
+  }
+  .budget-row{
+    margin-top:14px;
+  }
+  .budget-bar-bg{
+    background:rgba(198,161,91,0.14);
+    height:5px;
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .budget-bar-fill{
+    height:100%;
+    width:0%;
+    background:var(--gold);
+    transition:width 0.3s ease, background 0.3s ease;
+  }
+  .budget-label{
+    font-size:0.72rem;
+    margin-top:8px;
+    opacity:0.75;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    letter-spacing:0.02em;
+  }
+  .budget-btn{
+    background:none;
+    border:none;
+    color:var(--gold-bright);
+    font-size:0.72rem;
+    text-decoration:underline;
+    opacity:0.85;
+    padding:0;
+    margin-top:8px;
   }
   .price-input{
     width:58px;
     border:1px solid var(--line);
     background:var(--paper);
-    border-radius:8px;
+    border-radius:10px;
     padding:5px 6px;
     font-size:0.8rem;
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
     color:var(--ink);
     text-align:right;
+    flex-shrink:0;
+  }
+  .qty-input{
+    width:52px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    border-radius:10px;
+    padding:5px 6px;
+    font-size:0.78rem;
+    color:var(--ink);
+    text-align:center;
     flex-shrink:0;
   }
   .currency{
@@ -116,42 +190,75 @@
     border:1px solid var(--line);
     background:var(--card);
     color:var(--ink);
-    padding:9px 6px;
-    border-radius:12px;
-    font-size:0.78rem;
+    padding:11px 8px;
+    border-radius:999px;
+    font-size:0.72rem;
     font-weight:600;
+    letter-spacing:0.03em;
+    box-shadow:0 1px 4px rgba(0,0,0,0.25);
   }
-  .toolbar button:active{ transform:scale(0.97); }
+  .toolbar button:active{ transform:scale(0.96); }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--gold-bright),var(--gold-deep)) !important;
+    color:#231a0f !important;
+    border:none !important;
+    font-weight:700 !important;
+  }
+  .btn-teal{
+    background:var(--teal) !important;
+    color:var(--ink) !important;
+    border:1px solid rgba(240,231,214,0.15) !important;
+  }
+  .btn-gold{
+    background:transparent !important;
+    color:var(--gold-bright) !important;
+    border:1px solid var(--gold-deep) !important;
+  }
   .category{
     background:var(--card);
     border:1px solid var(--line);
     border-radius:16px;
     margin-bottom:14px;
     overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,0.25);
   }
   .category-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:12px 14px;
+    padding:14px 16px;
     cursor:pointer;
   }
   .category-head .name{
     display:flex;
     align-items:center;
-    gap:8px;
-    font-weight:700;
-    font-size:0.95rem;
+    gap:10px;
+    font-weight:600;
+    font-size:0.86rem;
+    font-family:"Fraunces",Georgia,serif;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    color:var(--ink);
   }
-  .swatch{
-    width:10px;height:10px;border-radius:50%;
+  .cat-icon{
+    width:28px;height:28px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.9rem;
+    flex-shrink:0;
+    background:rgba(198,161,91,0.12);
+    border:1px solid var(--line);
   }
   .count-pill{
-    font-size:0.7rem;
-    color:var(--muted);
-    background:var(--paper);
-    padding:2px 8px;
+    font-size:0.68rem;
+    color:var(--gold-bright);
+    background:rgba(198,161,91,0.1);
+    border:1px solid var(--line);
+    padding:2px 9px;
     border-radius:20px;
+    letter-spacing:0.02em;
   }
   .chev{
     font-size:0.7rem;
@@ -165,15 +272,45 @@
   }
   .item{
     display:flex;
-    align-items:center;
-    gap:10px;
+    flex-direction:column;
+    gap:6px;
     padding:9px 2px;
     border-top:1px solid var(--line);
   }
   .item:first-child{ border-top:none; }
+  .item-row1{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .item-row2{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding-left:32px;
+    flex-wrap:wrap;
+  }
+  .store-input{
+    width:84px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    border-radius:10px;
+    padding:5px 6px;
+    font-size:0.76rem;
+    color:var(--ink);
+    flex-shrink:0;
+  }
+  .price-hint{
+    font-size:0.68rem;
+    color:var(--muted);
+    flex-basis:100%;
+    padding-left:0;
+  }
+  .price-hint.up{ color:var(--spice-bright); }
+  .price-hint.down{ color:#7fb89a; }
   .check{
-    width:22px;height:22px;
-    border-radius:7px;
+    width:24px;height:24px;
+    border-radius:50%;
     border:2px solid var(--muted);
     flex-shrink:0;
     display:flex;
@@ -181,15 +318,19 @@
     justify-content:center;
     font-size:0.85rem;
     color:transparent;
+    transition:transform 0.15s ease, background 0.15s ease;
   }
+  .check:active{ transform:scale(0.85); }
   .item.bought .check{
     background:var(--leaf);
     border-color:var(--leaf-deep);
     color:#fff;
+    transform:scale(1.05);
   }
   .item-name{
     flex:1;
     font-size:0.9rem;
+    color:var(--ink);
   }
   .item.bought .item-name{
     text-decoration:line-through;
@@ -199,6 +340,7 @@
     color:var(--muted);
     font-size:1rem;
     padding:2px 6px;
+    opacity:0.6;
   }
   .add-row{
     display:flex;
@@ -209,8 +351,8 @@
     flex:1;
     border:1px solid var(--line);
     background:var(--paper);
-    border-radius:10px;
-    padding:8px 10px;
+    border-radius:12px;
+    padding:8px 12px;
     font-size:0.85rem;
     color:var(--ink);
   }
@@ -218,8 +360,8 @@
     background:var(--leaf);
     color:#fff;
     border:none;
-    border-radius:10px;
-    padding:8px 14px;
+    border-radius:999px;
+    padding:8px 16px;
     font-size:0.85rem;
     font-weight:600;
   }
@@ -232,16 +374,16 @@
     flex:1;
     border:1px solid var(--line);
     background:var(--card);
-    border-radius:12px;
-    padding:10px 12px;
+    border-radius:14px;
+    padding:11px 14px;
     font-size:0.85rem;
   }
   .add-cat button{
     background:var(--spice);
     color:#fff;
     border:none;
-    border-radius:12px;
-    padding:10px 16px;
+    border-radius:999px;
+    padding:11px 18px;
     font-weight:700;
     font-size:0.85rem;
   }
@@ -298,16 +440,134 @@
     font-size:0.8rem;
     flex-shrink:0;
   }
+  .overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(30,20,15,0.55);
+    z-index:30;
+    align-items:flex-end;
+  }
+  .overlay.show{ display:flex; }
+  .sheet{
+    background:var(--paper);
+    width:100%;
+    max-height:85vh;
+    overflow-y:auto;
+    border-top-left-radius:22px;
+    border-top-right-radius:22px;
+    padding:16px 16px calc(24px + env(safe-area-inset-bottom));
+  }
+  .sheet-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .sheet-head h2{
+    margin:0;
+    font-size:1.2rem;
+    font-family:"Fraunces",Georgia,serif;
+  }
+  .sheet-close{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:7px 14px;
+    font-weight:700;
+    font-size:0.85rem;
+  }
+  .month-bars{
+    display:flex;
+    align-items:flex-end;
+    gap:10px;
+    height:120px;
+    margin:10px 0 6px;
+    padding:0 4px;
+  }
+  .month-bar-col{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    height:100%;
+  }
+  .month-bar{
+    width:100%;
+    max-width:34px;
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold-deep));
+    border-radius:6px 6px 0 0;
+    transition:height 0.3s ease;
+  }
+  .month-bar.current{ background:linear-gradient(180deg,#6fae86,#3a6350); }
+  .month-bar-label{
+    font-size:0.65rem;
+    color:var(--muted);
+    margin-top:6px;
+    text-align:center;
+  }
+  .month-bar-value{
+    font-size:0.65rem;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:4px;
+  }
+  .compare-summary{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 14px;
+    margin:14px 0;
+    font-size:0.85rem;
+    line-height:1.5;
+  }
+  .compare-summary b{ color:var(--gold-bright); }
+  .cat-compare-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 2px;
+    border-top:1px solid var(--line);
+    font-size:0.82rem;
+  }
+  .cat-compare-row:first-child{ border-top:none; }
+  .delta-up{ color:var(--spice-bright); font-weight:700; }
+  .delta-down{ color:#7fb89a; font-weight:700; }
+  .delta-flat{ color:var(--muted); }
+  .no-history{
+    color:var(--muted);
+    font-size:0.85rem;
+    text-align:center;
+    padding:30px 10px;
+  }
+  .trip-row{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 2px;
+    border-top:1px solid var(--line);
+    font-size:0.82rem;
+  }
+  .trip-row:first-child{ border-top:none; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🧺 Grocery Planner</h1>
+  <h1 class="display">🧺 Grocery Planner</h1>
   <p id="dateLabel">Your list</p>
   <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
   <div class="progress-label" id="progressLabel">0 of 0 bought</div>
   <div class="total-label" id="totalLabel">£0.00 spent so far</div>
+
+  <div class="budget-row" id="budgetRow" style="display:none;">
+    <div class="budget-bar-bg"><div class="budget-bar-fill" id="budgetBarFill"></div></div>
+    <div class="budget-label">
+      <span id="budgetLabelText"></span>
+      <button class="budget-btn" id="editBudgetBtn">Edit</button>
+    </div>
+  </div>
+  <button class="budget-btn" id="setBudgetBtn">🎯 Set a monthly budget</button>
 </header>
 
 <main>
@@ -318,6 +578,13 @@
   </div>
   <div class="toolbar">
     <button id="copyBackup">📋 Copy my list (backup)</button>
+  </div>
+  <div class="toolbar">
+    <button id="finishTripBtn" class="btn-primary">✅ Finish this shop</button>
+    <button id="openHistoryBtn" class="btn-teal">📊 Monthly compare</button>
+  </div>
+  <div class="toolbar">
+    <button id="repeatLastBtn" class="btn-gold">🔁 Repeat last trip</button>
   </div>
 
   <div id="categories"></div>
@@ -330,6 +597,16 @@
   <div class="footnote">Saved locally on this device — works fully offline.</div>
 </main>
 
+<div class="overlay" id="historyOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>📊 Monthly Grocery Compare</h2>
+      <button class="sheet-close" id="closeHistoryBtn">Close</button>
+    </div>
+    <div id="historyContent"></div>
+  </div>
+</div>
+
 <div class="save-banner" id="saveBanner"></div>
 <div class="install-banner" id="installBanner">
   <span>Install this as an app on your home screen</span>
@@ -338,15 +615,22 @@
 
 <script>
 const DEFAULT_DATA = [
-  { name:"Produce", color:"#5c7a52", items:["Onions","Garlic","Tomatoes","Coriander","Green chillies","Ginger","Potatoes"], bought:{}, prices:{} },
-  { name:"Fruit", color:"#c1552c", items:["Bananas","Lemons","Apples"], bought:{}, prices:{} },
-  { name:"Meat & Fish", color:"#a6402a", items:["Chicken","Fish"], bought:{}, prices:{} },
-  { name:"Dairy", color:"#c98a3e", items:["Milk","Yogurt","Cheese","Butter"], bought:{}, prices:{} },
-  { name:"Condiments & Spices", color:"#8a6b3f", items:["Salt","Cumin","Red chilli powder","Garam masala","Cooking oil"], bought:{}, prices:{} },
-  { name:"Grains & Bakery", color:"#b08d57", items:["Rice","Bread","Flour"], bought:{}, prices:{} },
-  { name:"Beverages", color:"#4d7c8a", items:["Tea","Water"], bought:{}, prices:{} },
-  { name:"Household", color:"#6b6b6b", items:["Dish soap","Bin bags"], bought:{}, prices:{} }
+  { name:"Produce", color:"#4b6b3f", icon:"🥬", items:["Onions","Garlic","Tomatoes","Coriander","Green chillies","Ginger","Potatoes"], bought:{}, prices:{}, quantities:{}, stores:{} },
+  { name:"Fruit", color:"#a6382a", icon:"🍎", items:["Bananas","Lemons","Apples"], bought:{}, prices:{}, quantities:{}, stores:{} },
+  { name:"Meat & Fish", color:"#8a3624", icon:"🍗", items:["Chicken","Fish"], bought:{}, prices:{}, quantities:{}, stores:{} },
+  { name:"Dairy", color:"#c68a1f", icon:"🧀", items:["Milk","Yogurt","Cheese","Butter"], bought:{}, prices:{}, quantities:{}, stores:{} },
+  { name:"Condiments & Spices", color:"#9c6d18", icon:"🌶️", items:["Salt","Cumin","Red chilli powder","Garam masala","Cooking oil"], bought:{}, prices:{}, quantities:{}, stores:{} },
+  { name:"Grains & Bakery", color:"#b08d57", icon:"🍞", items:["Rice","Bread","Flour"], bought:{}, prices:{}, quantities:{}, stores:{} },
+  { name:"Beverages", color:"#2a6b72", icon:"☕", items:["Tea","Water"], bought:{}, prices:{}, quantities:{}, stores:{} },
+  { name:"Household", color:"#6b6b6b", icon:"🧻", items:["Dish soap","Bin bags"], bought:{}, prices:{}, quantities:{}, stores:{} }
 ];
+
+const HISTORY_KEY = "grocery-planner:history";
+const BUDGET_KEY = "grocery-planner:budget";
+const PRICE_MEMORY_KEY = "grocery-planner:priceMemory";
+let history = [];
+let budget = null;
+let priceMemory = {};
 
 let data = null;
 const STORAGE_KEY = "grocery-planner:list";
@@ -364,7 +648,52 @@ function load(){
     console.error("load failed", e);
     data = JSON.parse(JSON.stringify(DEFAULT_DATA));
   }
+  try{
+    const rawHist = localStorage.getItem(HISTORY_KEY);
+    history = rawHist ? JSON.parse(rawHist) : [];
+  }catch(e){
+    console.error("history load failed", e);
+    history = [];
+  }
+  try{
+    const rawBudget = localStorage.getItem(BUDGET_KEY);
+    budget = rawBudget ? parseFloat(rawBudget) : null;
+  }catch(e){
+    budget = null;
+  }
+  try{
+    const rawMem = localStorage.getItem(PRICE_MEMORY_KEY);
+    priceMemory = rawMem ? JSON.parse(rawMem) : {};
+  }catch(e){
+    priceMemory = {};
+  }
   render();
+}
+
+function savePriceMemory(){
+  try{
+    localStorage.setItem(PRICE_MEMORY_KEY, JSON.stringify(priceMemory));
+  }catch(e){
+    console.error("price memory save failed", e);
+  }
+}
+
+function saveBudget(){
+  try{
+    if(budget === null){ localStorage.removeItem(BUDGET_KEY); }
+    else{ localStorage.setItem(BUDGET_KEY, String(budget)); }
+  }catch(e){
+    console.error("budget save failed", e);
+  }
+}
+
+function saveHistory(){
+  try{
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }catch(e){
+    console.error("history save failed", e);
+    showBanner("Couldn't save your monthly history — device storage may be full.");
+  }
 }
 
 function showBanner(text){
@@ -390,13 +719,19 @@ function render(){
 
   data.forEach((cat, ci)=>{
     if(!cat.prices) cat.prices = {};
+    if(!cat.quantities) cat.quantities = {};
+    if(!cat.stores) cat.stores = {};
     total += cat.items.length;
     done += cat.items.filter(it=>cat.bought[it]).length;
 
     let catSubtotal = 0;
     cat.items.forEach(it=>{
-      if(cat.bought[it] && cat.prices[it]){
-        catSubtotal += parseFloat(cat.prices[it]) || 0;
+      if(cat.bought[it]){
+        const memKey = it.trim().toLowerCase();
+        const p = (cat.prices[it] !== undefined && cat.prices[it] !== "")
+          ? parseFloat(cat.prices[it])
+          : (priceMemory[memKey] !== undefined ? priceMemory[memKey] : 0);
+        catSubtotal += p || 0;
       }
     });
     grandTotal += catSubtotal;
@@ -408,25 +743,45 @@ function render(){
 
     catEl.innerHTML = `
       <div class="category-head" data-ci="${ci}">
-        <div class="name"><span class="swatch" style="background:${cat.color}"></span>${cat.name}</div>
+        <div class="name"><span class="cat-icon">${cat.icon || '🛒'}</span>${cat.name}</div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="count-pill">${boughtCount}/${cat.items.length}</span>
           <span class="chev">▾</span>
         </div>
       </div>
       <div class="items">
-        ${cat.items.length === 0 ? '<div class="empty">No items yet — add one below.</div>' : ''}
-        ${cat.items.map((it,ii)=>`
+        ${cat.items.length === 0 ? '<div class="empty">Nothing here yet — add your first item below.</div>' : ''}
+        ${cat.items.map((it,ii)=>{
+          const memKey = it.trim().toLowerCase();
+          const remembered = priceMemory[memKey];
+          const currentPrice = cat.prices[it];
+          let hintHtml = "";
+          if(remembered !== undefined){
+            if(currentPrice !== undefined && currentPrice !== "" && Math.abs(parseFloat(currentPrice) - remembered) > 0.009){
+              const diff = parseFloat(currentPrice) - remembered;
+              hintHtml = `<span class="price-hint ${diff>0?'up':'down'}">${diff>0?'▲':'▼'} was £${remembered.toFixed(2)} last time</span>`;
+            } else if(currentPrice === undefined || currentPrice === ""){
+              hintHtml = `<span class="price-hint">last paid £${remembered.toFixed(2)}</span>`;
+            }
+          }
+          return `
           <div class="item ${cat.bought[it] ? 'bought':''}" data-ci="${ci}" data-ii="${ii}">
-            <div class="check" data-action="toggle">${cat.bought[it] ? '✓':''}</div>
-            <div class="item-name">${escapeHtml(it)}</div>
-            <span class="currency">£</span>
-            <input type="number" inputmode="decimal" step="0.01" min="0" class="price-input" data-action="price" data-ci="${ci}" data-ii="${ii}" placeholder="0.00" value="${cat.prices[it] ?? ''}" />
-            <div class="del" data-action="del">✕</div>
-          </div>
-        `).join("")}
+            <div class="item-row1">
+              <div class="check" data-action="toggle">${cat.bought[it] ? '✓':''}</div>
+              <div class="item-name">${escapeHtml(it)}</div>
+              <div class="del" data-action="del">✕</div>
+            </div>
+            <div class="item-row2">
+              <input type="text" class="qty-input" data-action="qty" data-ci="${ci}" data-ii="${ii}" placeholder="qty" value="${escapeHtml(cat.quantities[it] ?? '')}" />
+              <input type="text" class="store-input" data-action="store" data-ci="${ci}" data-ii="${ii}" placeholder="store" value="${escapeHtml(cat.stores[it] ?? '')}" />
+              <span class="currency">£</span>
+              <input type="number" inputmode="decimal" step="0.01" min="0" class="price-input" data-action="price" data-ci="${ci}" data-ii="${ii}" placeholder="0.00" value="${cat.prices[it] ?? (remembered !== undefined ? remembered.toFixed(2) : '')}" />
+              ${hintHtml}
+            </div>
+          </div>`;
+        }).join("")}
       </div>
-      ${catSubtotal > 0 ? `<div class="cat-subtotal">Subtotal: £${catSubtotal.toFixed(2)}</div>` : ''}
+      ${catSubtotal > 0 ? `<div class="cat-subtotal">Subtotal: <span class="mono">£${catSubtotal.toFixed(2)}</span></div>` : ''}
       <div class="add-row">
         <input type="text" placeholder="Add item..." data-ci="${ci}" class="new-item-input" />
         <button data-ci="${ci}" class="add-item-btn">Add</button>
@@ -438,6 +793,7 @@ function render(){
   document.getElementById("progressBar").style.width = total ? (done/total*100)+"%" : "0%";
   document.getElementById("progressLabel").textContent = `${done} of ${total} bought`;
   document.getElementById("totalLabel").textContent = `£${grandTotal.toFixed(2)} spent so far`;
+  updateBudgetUI(grandTotal);
 
   wrap.querySelectorAll(".category-head").forEach(h=>{
     h.addEventListener("click", ()=>{
@@ -461,7 +817,19 @@ function render(){
       data[ci].items.splice(ii,1);
       delete data[ci].bought[name];
       delete data[ci].prices[name];
+      delete data[ci].quantities[name];
+      delete data[ci].stores[name];
       render(); save();
+    });
+    const qtyInput = row.querySelector('[data-action="qty"]');
+    qtyInput.addEventListener("click", e=> e.stopPropagation());
+    qtyInput.addEventListener("change", (e)=>{
+      const ci=row.dataset.ci, ii=row.dataset.ii;
+      const name = data[ci].items[ii];
+      const val = e.target.value.trim();
+      if(val === ""){ delete data[ci].quantities[name]; }
+      else { data[ci].quantities[name] = val; }
+      save();
     });
     const priceInput = row.querySelector('[data-action="price"]');
     priceInput.addEventListener("click", e=> e.stopPropagation());
@@ -470,8 +838,23 @@ function render(){
       const name = data[ci].items[ii];
       const val = e.target.value;
       if(val === ""){ delete data[ci].prices[name]; }
-      else { data[ci].prices[name] = parseFloat(val) || 0; }
+      else {
+        const num = parseFloat(val) || 0;
+        data[ci].prices[name] = num;
+        priceMemory[name.trim().toLowerCase()] = num;
+        savePriceMemory();
+      }
       render(); save();
+    });
+    const storeInput = row.querySelector('[data-action="store"]');
+    storeInput.addEventListener("click", e=> e.stopPropagation());
+    storeInput.addEventListener("change", (e)=>{
+      const ci=row.dataset.ci, ii=row.dataset.ii;
+      const name = data[ci].items[ii];
+      const val = e.target.value.trim();
+      if(val === ""){ delete data[ci].stores[name]; }
+      else { data[ci].stores[name] = val; }
+      save();
     });
   });
   wrap.querySelectorAll(".add-item-btn").forEach(btn=>{
@@ -506,7 +889,7 @@ document.getElementById("addCatBtn").addEventListener("click", ()=>{
   const input = document.getElementById("newCatInput");
   const val = input.value.trim();
   if(val){
-    data.push({name:val, color:"#7a6a55", items:[], bought:{}, prices:{}});
+    data.push({name:val, color:"#7a6a55", icon:"🛒", items:[], bought:{}, prices:{}, quantities:{}, stores:{}});
     input.value="";
     render(); save();
   }
@@ -518,7 +901,11 @@ document.getElementById("newCatInput").addEventListener("keydown",(e)=>{
 document.getElementById("clearBought").addEventListener("click", ()=>{
   data.forEach(cat=>{
     cat.items.forEach(it=>{
-      if(cat.bought[it]) delete cat.prices[it];
+      if(cat.bought[it]){
+        delete cat.prices[it];
+        delete cat.quantities[it];
+        delete cat.stores[it];
+      }
     });
     cat.items = cat.items.filter(it=>!cat.bought[it]);
     cat.bought = {};
@@ -543,8 +930,10 @@ document.getElementById("copyBackup").addEventListener("click", async ()=>{
     lines.push(`${cat.name}:`);
     cat.items.forEach(it=>{
       const mark = cat.bought[it] ? "[x]" : "[ ]";
+      const qty = cat.quantities && cat.quantities[it] ? ` (${cat.quantities[it]})` : "";
+      const store = cat.stores && cat.stores[it] ? ` @ ${cat.stores[it]}` : "";
       const price = cat.prices && cat.prices[it] ? ` - £${parseFloat(cat.prices[it]).toFixed(2)}` : "";
-      lines.push(`  ${mark} ${it}${price}`);
+      lines.push(`  ${mark} ${it}${qty}${store}${price}`);
     });
   });
   const text = lines.join("\n");
@@ -557,10 +946,311 @@ document.getElementById("copyBackup").addEventListener("click", async ()=>{
   }
 });
 
+function updateBudgetUI(currentTripTotal){
+  const row = document.getElementById("budgetRow");
+  const setBtn = document.getElementById("setBudgetBtn");
+
+  if(budget === null || budget === undefined){
+    row.style.display = "none";
+    setBtn.style.display = "inline-block";
+    return;
+  }
+
+  row.style.display = "block";
+  setBtn.style.display = "none";
+
+  const now = new Date();
+  const mk = monthKeyFromDate(now);
+  const historyThisMonth = history
+    .filter(t=>t.monthKey === mk)
+    .reduce((sum,t)=>sum+t.total, 0);
+  const monthSpend = historyThisMonth + (currentTripTotal || 0);
+
+  const ratio = budget > 0 ? monthSpend / budget : 0;
+  const pct = Math.min(ratio*100, 100);
+  const fill = document.getElementById("budgetBarFill");
+  fill.style.width = pct + "%";
+
+  let color = "#5f8f76"; // muted emerald - safe
+  if(ratio >= 1) color = "#b24a52"; // soft burgundy-red - over budget
+  else if(ratio >= 0.8) color = "#d9a54c"; // muted amber-gold - approaching
+  fill.style.background = color;
+
+  document.getElementById("budgetLabelText").innerHTML =
+    `<span class="mono">£${monthSpend.toFixed(2)} of £${budget.toFixed(2)}</span> budget this month`;
+}
+
+document.getElementById("setBudgetBtn").addEventListener("click", ()=>{
+  const val = prompt("Set your monthly grocery budget (£):", budget ? budget.toFixed(2) : "");
+  if(val === null) return;
+  const num = parseFloat(val);
+  if(!isNaN(num) && num > 0){
+    budget = num;
+    saveBudget();
+    render();
+  }
+});
+document.getElementById("editBudgetBtn").addEventListener("click", ()=>{
+  const val = prompt("Update your monthly grocery budget (£), or clear it:", budget ? budget.toFixed(2) : "");
+  if(val === null) return;
+  if(val.trim() === ""){
+    budget = null;
+  } else {
+    const num = parseFloat(val);
+    if(!isNaN(num) && num > 0) budget = num;
+  }
+  saveBudget();
+  render();
+});
+
+document.getElementById("repeatLastBtn").addEventListener("click", ()=>{
+  if(history.length === 0){
+    showBanner("No past trips saved yet — finish a shop first to build history.");
+    return;
+  }
+  const lastTrip = [...history].sort((a,b)=> new Date(b.date) - new Date(a.date))[0];
+  const tripDate = new Date(lastTrip.date).toLocaleDateString(undefined,{day:'numeric',month:'short'});
+
+  if(!confirm(`Add back the ${lastTrip.items.length} items from your last trip (${tripDate})? They won't be ticked — just re-added so you can shop again.`)){
+    return;
+  }
+
+  let addedCount = 0;
+  lastTrip.items.forEach(it=>{
+    let cat = data.find(c=>c.name === it.category);
+    if(!cat){
+      cat = { name: it.category, color:"#7a6a55", icon:"🛒", items:[], bought:{}, prices:{}, quantities:{}, stores:{} };
+      data.push(cat);
+    }
+    if(!cat.items.includes(it.name)){
+      cat.items.push(it.name);
+      addedCount++;
+    }
+    if(it.qty) cat.quantities[it.name] = it.qty;
+    if(it.store) cat.stores[it.name] = it.store;
+  });
+
+  render(); save();
+  showBanner(`Added items from your ${tripDate} trip — ready to shop again.`);
+});
+
 const dateLabel = document.getElementById("dateLabel");
 dateLabel.textContent = new Date().toLocaleDateString(undefined, {weekday:'long', month:'long', day:'numeric'});
 
 load();
+
+// ---- Monthly trips + comparison ----
+function monthKeyFromDate(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function monthLabel(monthKey){
+  const [y,m] = monthKey.split('-').map(Number);
+  return new Date(y, m-1, 1).toLocaleDateString(undefined, {month:'short', year:'numeric'});
+}
+function prevMonthKey(monthKey){
+  const [y,m] = monthKey.split('-').map(Number);
+  const d = new Date(y, m-2, 1);
+  return monthKeyFromDate(d);
+}
+
+document.getElementById("finishTripBtn").addEventListener("click", ()=>{
+  const tripItems = [];
+  let tripTotal = 0;
+  const categoryTotals = {};
+
+  data.forEach(cat=>{
+    cat.items.forEach(it=>{
+      if(cat.bought[it]){
+        const memKey = it.trim().toLowerCase();
+        const price = (cat.prices[it] !== undefined && cat.prices[it] !== "")
+          ? parseFloat(cat.prices[it])
+          : (priceMemory[memKey] !== undefined ? priceMemory[memKey] : 0);
+        tripItems.push({ category:cat.name, name:it, qty: cat.quantities[it] || "", store: cat.stores[it] || "", price });
+        tripTotal += price;
+        categoryTotals[cat.name] = (categoryTotals[cat.name] || 0) + price;
+        priceMemory[memKey] = price;
+      }
+    });
+  });
+  savePriceMemory();
+
+  if(tripItems.length === 0){
+    showBanner("Nothing marked as bought yet — tick off items first.");
+    return;
+  }
+
+  if(!confirm(`Save this trip? ${tripItems.length} items, total £${tripTotal.toFixed(2)}. This will clear ticks, prices, and quantities so you're ready for next time.`)){
+    return;
+  }
+
+  const now = new Date();
+  history.push({
+    date: now.toISOString(),
+    monthKey: monthKeyFromDate(now),
+    total: tripTotal,
+    categoryTotals,
+    items: tripItems
+  });
+  saveHistory();
+
+  data.forEach(cat=>{
+    cat.items.forEach(it=>{
+      if(cat.bought[it]){
+        delete cat.prices[it];
+        delete cat.quantities[it];
+        delete cat.stores[it];
+      }
+    });
+    cat.bought = {};
+  });
+  save();
+  render();
+  showBanner(`Trip saved — £${tripTotal.toFixed(2)} added to ${monthLabel(monthKeyFromDate(now))}.`);
+});
+
+function renderHistoryPanel(){
+  const el = document.getElementById("historyContent");
+
+  if(history.length === 0){
+    el.innerHTML = `<div class="no-history">No shopping trips saved yet. Tick off items, then tap "Finish this shop" to start tracking monthly spend.</div>`;
+    return;
+  }
+
+  // aggregate by month
+  const monthlyTotals = {};
+  const monthlyCategoryTotals = {};
+  history.forEach(trip=>{
+    monthlyTotals[trip.monthKey] = (monthlyTotals[trip.monthKey] || 0) + trip.total;
+    if(!monthlyCategoryTotals[trip.monthKey]) monthlyCategoryTotals[trip.monthKey] = {};
+    Object.entries(trip.categoryTotals || {}).forEach(([cat, amt])=>{
+      monthlyCategoryTotals[trip.monthKey][cat] = (monthlyCategoryTotals[trip.monthKey][cat] || 0) + amt;
+    });
+  });
+
+  const sortedMonths = Object.keys(monthlyTotals).sort();
+  const last6 = sortedMonths.slice(-6);
+  const maxVal = Math.max(...last6.map(m=>monthlyTotals[m]), 1);
+  const currentMonthKey = monthKeyFromDate(new Date());
+
+  let html = `<div class="month-bars">`;
+  last6.forEach(m=>{
+    const val = monthlyTotals[m];
+    const heightPct = Math.max((val/maxVal)*100, 4);
+    html += `
+      <div class="month-bar-col">
+        <div class="month-bar-value">£${val.toFixed(0)}</div>
+        <div class="month-bar ${m===currentMonthKey ? 'current':''}" style="height:${heightPct}%"></div>
+        <div class="month-bar-label">${monthLabel(m)}</div>
+      </div>`;
+  });
+  html += `</div>`;
+
+  // compare current vs previous month
+  const prevKey = prevMonthKey(currentMonthKey);
+  const curTotal = monthlyTotals[currentMonthKey] || 0;
+  const prevTotal = monthlyTotals[prevKey] || 0;
+
+  if(monthlyTotals[currentMonthKey] === undefined && monthlyTotals[prevKey] === undefined){
+    html += `<div class="compare-summary">Not enough data yet to compare this month with last month.</div>`;
+  } else {
+    const diff = curTotal - prevTotal;
+    const pct = prevTotal > 0 ? Math.abs(diff/prevTotal*100).toFixed(0) : null;
+    let summary;
+    if(prevTotal === 0){
+      summary = `This is your first tracked month — <b>£${curTotal.toFixed(2)}</b> so far.`;
+    } else if(diff > 0){
+      summary = `You've spent <b>£${diff.toFixed(2)} more</b> this month than last month${pct ? ` (about ${pct}% up)` : ''}.`;
+    } else if(diff < 0){
+      summary = `You've spent <b>£${Math.abs(diff).toFixed(2)} less</b> this month than last month${pct ? ` (about ${pct}% down)` : ''} — nice.`;
+    } else {
+      summary = `You've spent exactly the same as last month so far.`;
+    }
+    html += `<div class="compare-summary">${summary}</div>`;
+
+    // per-category comparison
+    const curCats = monthlyCategoryTotals[currentMonthKey] || {};
+    const prevCats = monthlyCategoryTotals[prevKey] || {};
+    const allCats = Array.from(new Set([...Object.keys(curCats), ...Object.keys(prevCats)])).sort();
+
+    if(allCats.length > 0){
+      html += `<div style="font-weight:700;font-size:0.85rem;margin:10px 0 4px;">By category vs last month</div>`;
+      html += `<div class="category" style="padding:4px 10px;">`;
+      allCats.forEach(cat=>{
+        const c = curCats[cat] || 0;
+        const p = prevCats[cat] || 0;
+        const d = c - p;
+        let deltaHtml;
+        if(p === 0){
+          deltaHtml = `<span class="delta-flat">new</span>`;
+        } else if(d > 0.009){
+          deltaHtml = `<span class="delta-up">▲ £${d.toFixed(2)}</span>`;
+        } else if(d < -0.009){
+          deltaHtml = `<span class="delta-down">▼ £${Math.abs(d).toFixed(2)}</span>`;
+        } else {
+          deltaHtml = `<span class="delta-flat">— same</span>`;
+        }
+        html += `<div class="cat-compare-row"><span>${escapeHtml(cat)}</span><span>£${c.toFixed(2)} ${deltaHtml}</span></div>`;
+      });
+      html += `</div>`;
+    }
+  }
+
+  // recent trips list
+  const recentTrips = [...history].sort((a,b)=> new Date(b.date) - new Date(a.date)).slice(0,10);
+  html += `<div style="font-weight:700;font-size:0.85rem;margin:16px 0 4px;">Recent trips</div>`;
+  html += `<div class="category" style="padding:4px 10px;">`;
+  recentTrips.forEach(trip=>{
+    const d = new Date(trip.date);
+    html += `<div class="trip-row"><span>${d.toLocaleDateString(undefined,{day:'numeric',month:'short'})} · ${trip.items.length} items</span><span>£${trip.total.toFixed(2)}</span></div>`;
+  });
+  html += `</div>`;
+
+  // cheapest store insights
+  const storeInsights = computeStoreInsights();
+  if(storeInsights.length > 0){
+    html += `<div style="font-weight:700;font-size:0.85rem;margin:16px 0 4px;">💰 Where things are cheapest</div>`;
+    html += `<div class="category" style="padding:4px 10px;">`;
+    storeInsights.slice(0,6).forEach(ins=>{
+      html += `<div class="trip-row"><span>${escapeHtml(ins.item)}</span><span><b>${escapeHtml(ins.cheapest.store)}</b> £${ins.cheapest.avg.toFixed(2)} <span class="delta-flat">(vs ${escapeHtml(ins.priciest.store)} £${ins.priciest.avg.toFixed(2)})</span></span></div>`;
+    });
+    html += `</div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+function computeStoreInsights(){
+  const itemStorePrices = {};
+  history.forEach(trip=>{
+    trip.items.forEach(it=>{
+      if(!it.store) return;
+      itemStorePrices[it.name] = itemStorePrices[it.name] || {};
+      itemStorePrices[it.name][it.store] = itemStorePrices[it.name][it.store] || [];
+      itemStorePrices[it.name][it.store].push(it.price);
+    });
+  });
+  const insights = [];
+  Object.entries(itemStorePrices).forEach(([item, stores])=>{
+    const storeNames = Object.keys(stores);
+    if(storeNames.length < 2) return;
+    const avgs = storeNames.map(s=>({ store:s, avg: stores[s].reduce((a,b)=>a+b,0)/stores[s].length }));
+    avgs.sort((a,b)=>a.avg-b.avg);
+    insights.push({ item, cheapest:avgs[0], priciest:avgs[avgs.length-1] });
+  });
+  insights.sort((a,b)=> (b.priciest.avg-b.cheapest.avg) - (a.priciest.avg-a.cheapest.avg));
+  return insights;
+}
+
+document.getElementById("openHistoryBtn").addEventListener("click", ()=>{
+  renderHistoryPanel();
+  document.getElementById("historyOverlay").classList.add("show");
+});
+document.getElementById("closeHistoryBtn").addEventListener("click", ()=>{
+  document.getElementById("historyOverlay").classList.remove("show");
+});
+document.getElementById("historyOverlay").addEventListener("click",(e)=>{
+  if(e.target.id === "historyOverlay") e.target.classList.remove("show");
+});
 
 // ---- PWA install + service worker ----
 let deferredInstallPrompt = null;
